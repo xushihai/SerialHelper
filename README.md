@@ -1,5 +1,5 @@
 # AccessibilityService
-[![](https://jitpack.io/v/xushihai/MediaPicker.svg)](https://jitpack.io/#xushihai/SerialHelper)
+[![](https://jitpack.io/v/xushihai/SerialHelper.svg)](https://jitpack.io/#xushihai/SerialHelper)
 
 # 介绍
 
