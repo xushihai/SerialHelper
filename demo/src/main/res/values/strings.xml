@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">AndroidTest</string>
+
+
+
+    <string-array name="audio_mode_arr">
+        <item>MODE_NORMAL       </item>
+        <item>MODE_COMMUNICATE</item>
+        <item>MODE_IN_CALL      </item>
+    </string-array>
+
+    <string-array name="audio_stream_type_arr">
+        <item>STREAM_MUSIC      </item>
+        <item>STREAM_VOICE__CALL</item>
+        <item>STREAM_RING      </item>
+    </string-array>
+
+</resources>

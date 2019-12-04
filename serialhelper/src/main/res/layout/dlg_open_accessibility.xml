@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="221dp"
+    android:paddingRight="24dp"
+    android:paddingLeft="24dp">
+
+
+    <!--  android:layout_height="221dp"
+    android:paddingRight="24dp"
+    android:paddingLeft="24dp">-->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="#bb4f81e5"
+        android:layout_width="match_parent"
+        android:layout_height="165dp">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="开启图中选项"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:textColor="#ffffff"/>
+
+        <RelativeLayout
+            android:background="#ffffff"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="match_parent"
+            android:elevation="10dp"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="密迅读取序列号"
+                    android:textSize="16sp"
+                    android:textColor="#222222"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="关闭"
+                    android:layout_marginTop="5dp"
+                    android:textSize="10sp"
+                    android:textColor="#666666"/>
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:src="@drawable/ic_navigate_next_black_24dp"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_op"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="我知道了"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="#339adc"/>
+
+</LinearLayout>

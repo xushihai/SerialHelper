@@ -1,0 +1,33 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.serialhelper">
+
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <!--manager.moveTaskToFront需要REORDER_TASKS权限-->
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+
+
+    <application android:allowBackup="true" android:label="@string/app_name"
+        android:supportsRtl="true">
+
+        <service
+            android:name=".ReadSerialAccessibilityService"
+            android:label="密迅读取序列号"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <!-- 在xml文件配置辅助功能,也可在onServiceConnected()中使用setServiceInfo()动态配置 -->
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
+
+        <activity
+            android:name=".AlertOpenServiceDialog"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/AccessibilityDialog" />
+
+    </application>
+
+</manifest>
