@@ -2,7 +2,6 @@ package com.serialhelper;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,15 +11,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.List;
+import static com.serialhelper.SerialHelper.SerialHandler.MSG_OPEN_ACCESSIBILITY_SERVICE;
+import static com.serialhelper.SerialHelper.SerialHandler.MSG_READ_SERIAL_OK;
 
 /**
  * Created by 徐仕海 on 19-9-19.
@@ -37,12 +33,12 @@ public class SerialHelper {
         }
         handler = new SerialHandler(context, onReadSerialListener);
 
-        if(Build.VERSION.SDK_INT>=29){
+        if (Build.VERSION.SDK_INT >= 29) {
 
-        }else if(Build.VERSION.SDK_INT >= 26){//Android8 android9使用Build.getSerial()
+        } else if (Build.VERSION.SDK_INT >= 26) {//Android8 android9使用Build.getSerial()
             SerialHelper.sendMessage(Build.getSerial());
             return;
-        }else{//Android8.0之前使用Build.SERIAL
+        } else {//Android8.0之前使用Build.SERIAL
             SerialHelper.sendMessage(Build.SERIAL);
             return;
         }
@@ -51,24 +47,16 @@ public class SerialHelper {
         messageTv.setText(R.string.open_accessibility_service_alert);
         messageTv.setTextColor(Color.parseColor("#757575"));
         messageTv.setTextSize(15);
-        messageTv.setPadding(72,30,90,30);
-        messageTv.setLineSpacing(2f,1.2f);
-        new AlertDialog.Builder(context,R.style.AlertDialog)
+        messageTv.setPadding(72, 30, 90, 30);
+        messageTv.setLineSpacing(2f, 1.2f);
+        new AlertDialog.Builder(context, R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(messageTv)
                 .setNegativeButton("退出", null)
                 .setPositiveButton("前往打开", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!ReadSerialAccessibilityService.isSettingOpen(ReadSerialAccessibilityService.class, context)) {
-                            ReadSerialAccessibilityService.jumpToSetting(context);
-
-                            Intent intent = new Intent(context, AlertOpenServiceDialog.class);
-                            context.startActivity(intent);
-
-                        } else {
-                            simulateClickSerial(context);
-                        }
+                        handler.sendEmptyMessageDelayed(MSG_OPEN_ACCESSIBILITY_SERVICE, 100);
                     }
                 })
                 .create()
@@ -99,7 +87,7 @@ public class SerialHelper {
             return;
 
         Message message = new Message();
-        message.what = 11;
+        message.what = MSG_READ_SERIAL_OK;
         Bundle data = new Bundle();
         data.putCharSequence("serialNumber", serialNumber);
         message.setData(data);
@@ -107,9 +95,11 @@ public class SerialHelper {
     }
 
 
-    private static class SerialHandler extends Handler {
+    protected static class SerialHandler extends Handler {
         Activity context;
         OnReadSerialListener onReadSerialListener;
+        public static final int MSG_OPEN_ACCESSIBILITY_SERVICE = 10;
+        public static final int MSG_READ_SERIAL_OK = 11;
 
         public SerialHandler(Activity context, OnReadSerialListener onReadSerialListener) {
             this.context = context;
@@ -119,16 +109,30 @@ public class SerialHelper {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            CharSequence serialNumber = msg.getData().getCharSequence("serialNumber");
-            Log.e("消息", "msg:" + msg.what + "  " + serialNumber);
-//            Intent intent = new Intent();
-//            intent.setComponent(new ComponentName(context.getPackageName(),context.getClass().getCanonicalName()));
-//            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//            context.startActivity(intent);
+            switch (msg.what) {
+                case MSG_OPEN_ACCESSIBILITY_SERVICE:
+                    openAccessibilityService();
+                    break;
+                case MSG_READ_SERIAL_OK:
+                    handleReadSerialOk(msg);
+                    break;
+            }
+        }
 
+        public void openAccessibilityService() {
+            if (!ReadSerialAccessibilityService.isSettingOpen(ReadSerialAccessibilityService.class, context)) {
+                ReadSerialAccessibilityService.jumpToSetting(context);
+                Intent intent = new Intent(context, AlertOpenServiceDialog.class);
+                context.startActivity(intent);
+            } else {
+                simulateClickSerial(context);
+            }
+        }
+
+        public void handleReadSerialOk(Message msg) {
             ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             manager.moveTaskToFront(context.getTaskId(), ActivityManager.MOVE_TASK_WITH_HOME);
-
+            CharSequence serialNumber = msg.getData().getCharSequence("serialNumber");
             if (onReadSerialListener != null)
                 onReadSerialListener.onSerialNumber(serialNumber);
         }

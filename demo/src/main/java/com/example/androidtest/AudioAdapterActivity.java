@@ -30,15 +30,15 @@ public class AudioAdapterActivity extends Activity {
                     public void onSerialNumber(CharSequence serialNumber) {
                         Log.e("xxx", "serial:" + serialNumber);
                         Toast.makeText(AudioAdapterActivity.this, "序列号:" + serialNumber, Toast.LENGTH_SHORT).show();
-                        new AlertDialog.Builder(AudioAdapterActivity.this)
-                                .setTitle("读取序列号")
-                                .setMessage("序列号:" + serialNumber)
-                                .show();
+//                        new AlertDialog.Builder(AudioAdapterActivity.this)
+//                                .setTitle("读取序列号")
+//                                .setMessage("序列号:" + serialNumber)
+//                                .show();
                     }
                 });
             }
         });
-
     }
+
 
 }
