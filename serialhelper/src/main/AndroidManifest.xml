@@ -11,7 +11,7 @@
 
         <service
             android:name=".ReadSerialAccessibilityService"
-            android:label="密迅读取序列号"
+            android:label="@string/serial_accessibility_service"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

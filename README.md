@@ -13,3 +13,6 @@
                      }
                  });
 ```
+
+#注：
+    调用SerialHelper.getSerial的activity的启动模式需要设置为singleInstance android:launchMode="singleInstance"

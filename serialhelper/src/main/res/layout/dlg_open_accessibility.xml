@@ -44,7 +44,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="密迅读取序列号"
+                    android:text="@string/serial_accessibility_service"
                     android:textSize="16sp"
                     android:textColor="#222222"/>
 
