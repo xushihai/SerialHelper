@@ -75,6 +75,7 @@ public class SerialHelper {
             return;
 
         Intent intent = new Intent(Settings.ACTION_DEVICE_INFO_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
 
         handler.postDelayed(new Runnable() {
