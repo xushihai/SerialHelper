@@ -52,7 +52,12 @@ public class SerialHelper {
         new AlertDialog.Builder(context, R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(messageTv)
-                .setNegativeButton("退出", null)
+                .setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        context.finish();
+                    }
+                })
                 .setPositiveButton("前往打开", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
