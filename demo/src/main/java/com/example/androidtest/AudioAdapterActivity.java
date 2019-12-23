@@ -33,7 +33,7 @@ public class AudioAdapterActivity extends Activity {
         wiredHeadsetIndicator.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SerialHelper.getSerial(AudioAdapterActivity.this, new SerialHelper.OnReadSerialListener() {
+                SerialHelper.getSerial2(AudioAdapterActivity.this, new SerialHelper.OnReadSerialListener() {
                     @Override
                     public void onSerialNumber(CharSequence serialNumber) {
                         Log.e("xxx", "serial:" + serialNumber);

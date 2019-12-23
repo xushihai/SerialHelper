@@ -106,7 +106,7 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void simulateClickStatusView() {
         Path path = new Path();
-        int yStart = getResources().getDisplayMetrics().heightPixels;
+        int yStart = getResources().getDisplayMetrics().heightPixels - (int) (48 * getResources().getDisplayMetrics().density);
         int yEnd = (int) (60 * getResources().getDisplayMetrics().density);
         int x = (int) (70 * getResources().getDisplayMetrics().density);
         path.moveTo(x, yStart);
@@ -119,16 +119,16 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 super.onCompleted(gestureDescription);
-
                 try {
                     AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
                     if (nodeInfo != null && Build.VERSION.SDK_INT >= 18) {
-                        int count = nodeInfo.getChildCount();
-                        Log.e("View", "count:" + count);
-                        ergodicNode(nodeInfo);
+                        ergodicNodePrint(nodeInfo);
 
-                        AccessibilityNodeInfo recyclerViewNode = nodeInfo.getChild(3);
-                        ergodicNode(recyclerViewNode);
+                        AccessibilityNodeInfo recyclerViewNode = findRecyclerViewNode(nodeInfo);
+                        if (recyclerViewNode != null)
+                            ergodicNode(recyclerViewNode);
+                        else
+                            ergodicNode(nodeInfo);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -136,6 +136,36 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
             }
         }, new Handler());
         time = 0;
+    }
+
+    private void ergodicNodePrint(AccessibilityNodeInfo nodeInfo) {
+        int count = nodeInfo.getChildCount();
+        if (count == 0) {
+            Log.e("ViewGroup", "className:" + nodeInfo.getClassName() + ",text:" + nodeInfo.getText());
+            return;
+        } else {
+            Log.e("ViewGroup", "className:" + nodeInfo.getClassName() + " childCount:" + count);
+        }
+        for (int i = 0; i < count; i++) {
+            ergodicNodePrint(nodeInfo.getChild(i));
+        }
+    }
+
+    private AccessibilityNodeInfo findRecyclerViewNode(AccessibilityNodeInfo rootNodeInfo) {
+        int count = rootNodeInfo.getChildCount();
+        for (int i = 0; i < count; i++) {
+            if (rootNodeInfo.getChild(i).getClassName().toString().contains("RecyclerView")) {
+                return rootNodeInfo.getChild(i);
+            }
+        }
+
+        for (int i = 0; i < count; i++) {
+            AccessibilityNodeInfo nodeInfo = findRecyclerViewNode(rootNodeInfo.getChild(i));
+            if (nodeInfo != null) {
+                return nodeInfo;
+            }
+        }
+        return null;
     }
 
 
@@ -177,10 +207,12 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-//                    ergodicNode(getRootInActiveWindow().getChild(3));
-                    ergodicNode(getRootInActiveWindow());
+                    AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
+                    if (rootNodeInfo != null)
+                        ergodicNode(getRootInActiveWindow());
                 }
-            }, 200);
+            }, 400);
+//            }, 200);
             foundSerialView = true;
         } else if (contain(nodeInfo.getText(), serialSettings)) {
             final CharSequence serial = nodeInfo.getParent().getChild(1).getText();
@@ -190,7 +222,6 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
         }
         return foundSerialView;
     }
-
 
 
 }

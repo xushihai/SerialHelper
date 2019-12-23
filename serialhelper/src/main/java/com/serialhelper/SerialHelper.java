@@ -13,12 +13,16 @@ import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import static com.serialhelper.SerialHelper.SerialHandler.MSG_OPEN_ACCESSIBILITY_SERVICE;
 import static com.serialhelper.SerialHelper.SerialHandler.MSG_READ_SERIAL_OK;
 
 /**
+ * 目前只适配了华为系统，其他系统可能差别会大很多，比如miui
  * Created by 徐仕海 on 19-9-19.
  */
 
@@ -68,6 +72,67 @@ public class SerialHelper {
                 .show();
 
     }
+
+    public static void getSerial2(final Activity context, final OnReadSerialListener onReadSerialListener) {
+        if (!Thread.currentThread().getName().equals("main")) {
+            Log.e("SerialHelper", "当前线程：" + Thread.currentThread().getName() + " 不是主线程");
+            return;
+        }
+        handler = new SerialHandler(context, onReadSerialListener);
+
+//        if (Build.VERSION.SDK_INT >= 29) {
+//
+//        } else if (Build.VERSION.SDK_INT >= 26) {//Android8 android9使用Build.getSerial()
+//            SerialHelper.sendMessage(Build.getSerial());
+//            return;
+//        } else {//Android8.0之前使用Build.SERIAL
+//            SerialHelper.sendMessage(Build.SERIAL);
+//            return;
+//        }
+
+
+        final EditText editText = new EditText(context);
+        editText.setHint("填写设备序列号");
+        RelativeLayout relativeLayout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(60,60,60,30);
+        editText.setLayoutParams(layoutParams);
+        relativeLayout.addView(editText);
+        final AlertDialog.Builder inputBuilder = new AlertDialog.Builder(context, com.serialhelper.R.style.AlertDialog)
+                .setTitle("AndroidQ升级适配")
+                .setView(relativeLayout)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (onReadSerialListener != null)
+                            onReadSerialListener.onSerialNumber(editText.getText().toString());
+                    }
+                });
+
+        TextView messageTv = new TextView(context);
+        messageTv.setText(R.string.open_accessibility_service_alert);
+        messageTv.setTextColor(Color.parseColor("#757575"));
+        messageTv.setTextSize(15);
+        messageTv.setPadding(72, 30, 90, 30);
+        messageTv.setLineSpacing(2f, 1.2f);
+        new AlertDialog.Builder(context, R.style.AlertDialog)
+                .setTitle("AndroidQ升级适配")
+                .setView(messageTv)
+                .setNegativeButton("手动输入", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        inputBuilder.create().show();
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("前往打开", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.sendEmptyMessageDelayed(MSG_OPEN_ACCESSIBILITY_SERVICE, 100);
+                    }
+                })
+                .create()
+                .show();
+    }
+
 
 
     protected static void simulateClickSerial(final Context context) {
