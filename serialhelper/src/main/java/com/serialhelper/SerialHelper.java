@@ -13,6 +13,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -47,6 +48,17 @@ public class SerialHelper {
             return;
         }
 
+        DialogInterface.OnKeyListener onKeyListener = new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    context.finish();
+                    return true;
+                }
+                return false;
+            }
+        };
+
         TextView messageTv = new TextView(context);
         messageTv.setText(R.string.open_accessibility_service_alert);
         messageTv.setTextColor(Color.parseColor("#757575"));
@@ -68,6 +80,7 @@ public class SerialHelper {
                         handler.sendEmptyMessageDelayed(MSG_OPEN_ACCESSIBILITY_SERVICE, 100);
                     }
                 })
+                .setOnKeyListener(onKeyListener)
                 .create()
                 .show();
 
@@ -80,27 +93,37 @@ public class SerialHelper {
         }
         handler = new SerialHandler(context, onReadSerialListener);
 
-//        if (Build.VERSION.SDK_INT >= 29) {
-//
-//        } else if (Build.VERSION.SDK_INT >= 26) {//Android8 android9使用Build.getSerial()
-//            SerialHelper.sendMessage(Build.getSerial());
-//            return;
-//        } else {//Android8.0之前使用Build.SERIAL
-//            SerialHelper.sendMessage(Build.SERIAL);
-//            return;
-//        }
+        if (Build.VERSION.SDK_INT >= 29) {
 
+        } else if (Build.VERSION.SDK_INT >= 26) {//Android8 android9使用Build.getSerial()
+            SerialHelper.sendMessage(Build.getSerial());
+            return;
+        } else {//Android8.0之前使用Build.SERIAL
+            SerialHelper.sendMessage(Build.SERIAL);
+            return;
+        }
+        DialogInterface.OnKeyListener onKeyListener = new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    context.finish();
+                    return true;
+                }
+                return false;
+            }
+        };
 
         final EditText editText = new EditText(context);
         editText.setHint("填写设备序列号");
         RelativeLayout relativeLayout = new RelativeLayout(context);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(60,60,60,30);
+        layoutParams.setMargins(60, 60, 60, 30);
         editText.setLayoutParams(layoutParams);
         relativeLayout.addView(editText);
         final AlertDialog.Builder inputBuilder = new AlertDialog.Builder(context, com.serialhelper.R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(relativeLayout)
+                .setOnKeyListener(onKeyListener)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (onReadSerialListener != null)
@@ -129,10 +152,11 @@ public class SerialHelper {
                         handler.sendEmptyMessageDelayed(MSG_OPEN_ACCESSIBILITY_SERVICE, 100);
                     }
                 })
+                .setOnKeyListener(onKeyListener)
                 .create()
                 .show();
-    }
 
+    }
 
 
     protected static void simulateClickSerial(final Context context) {
