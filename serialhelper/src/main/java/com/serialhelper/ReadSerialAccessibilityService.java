@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
+
 
 /**
  * Created by 徐仕海 on 19-8-27.
@@ -51,6 +53,8 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e("辅助功能", "onStartCommand  " + intent.getAction());
         if (intent.getAction().equals("com.simulateClickStatusView")) {
+            foundStatusView = false;
+            foundStatusRetryTimes = 0;
             simulateClickStatusView();
             return START_STICKY_COMPATIBILITY;
         }
@@ -102,6 +106,8 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
         }
     }
 
+    boolean foundStatusView = false;
+    int foundStatusRetryTimes = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void simulateClickStatusView() {
@@ -109,16 +115,27 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
         int yStart = getResources().getDisplayMetrics().heightPixels - (int) (48 * getResources().getDisplayMetrics().density);
         int yEnd = (int) (60 * getResources().getDisplayMetrics().density);
         int x = (int) (70 * getResources().getDisplayMetrics().density);
+
         path.moveTo(x, yStart);
         path.lineTo(x, yEnd);
+
+
         GestureDescription gestureDescription = new GestureDescription.Builder()
                 .addStroke(new GestureDescription.StrokeDescription(path, 200L, 400L, false))
                 .build();
 
         dispatchGesture(gestureDescription, new GestureResultCallback() {
             @Override
+            public void onCancelled(GestureDescription gestureDescription) {
+                super.onCancelled(gestureDescription);
+                Log.e("辅助功能", "dispatchGesture onCancelled");
+            }
+
+            @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 super.onCompleted(gestureDescription);
+                Log.e("辅助功能", "dispatchGesture onCompleted");
+
                 try {
                     AccessibilityNodeInfo nodeInfo = getRootInActiveWindow();
                     if (nodeInfo != null && Build.VERSION.SDK_INT >= 18) {
@@ -133,10 +150,20 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                if (!foundStatusView) {
+                    if (foundStatusRetryTimes++ <= 3) {
+                        simulateClickStatusView();
+                    } else {
+                        Toast.makeText(ReadSerialAccessibilityService.this, "读取序列号失败", Toast.LENGTH_LONG).show();
+                        SerialHelper.sendMessage(null);
+                    }
+                }
             }
         }, new Handler());
         time = 0;
     }
+
 
     private void ergodicNodePrint(AccessibilityNodeInfo nodeInfo) {
         int count = nodeInfo.getChildCount();
@@ -184,8 +211,9 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
         }
     }
 
-    String[] enterSerialSettings = {"型号和硬件", "状态消息"};
-    String[] serialSettings = {"序列号"};
+    //中文简体，中文繁体，英文
+    String[] enterSerialSettings = {"型号和硬件", "状态消息","Status","狀態訊息"};
+    String[] serialSettings = {"序列号","Serial number","序號"};
 
     private boolean contain(CharSequence text, String[] arr) {
         for (String settingView :
@@ -213,6 +241,7 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
                 }
             }, 400);
 //            }, 200);
+            foundStatusView = true;
             foundSerialView = true;
         } else if (contain(nodeInfo.getText(), serialSettings)) {
             final CharSequence serial = nodeInfo.getParent().getChild(1).getText();
