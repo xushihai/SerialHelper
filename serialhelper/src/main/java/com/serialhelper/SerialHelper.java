@@ -68,6 +68,7 @@ public class SerialHelper {
         new AlertDialog.Builder(context, R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(messageTv)
+                .setCancelable(false)
                 .setNegativeButton("退出", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -123,6 +124,7 @@ public class SerialHelper {
         final AlertDialog.Builder inputBuilder = new AlertDialog.Builder(context, com.serialhelper.R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(relativeLayout)
+                .setCancelable(false)
                 .setOnKeyListener(onKeyListener)
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -140,6 +142,7 @@ public class SerialHelper {
         new AlertDialog.Builder(context, R.style.AlertDialog)
                 .setTitle("AndroidQ升级适配")
                 .setView(messageTv)
+                .setCancelable(false)
                 .setNegativeButton("手动输入", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         inputBuilder.create().show();
