@@ -111,6 +111,7 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void simulateClickStatusView() {
+        Toast.makeText(this, "正在解析序列号，暂时切勿操作手机", Toast.LENGTH_LONG).show();
         Path path = new Path();
         int yStart = getResources().getDisplayMetrics().heightPixels - (int) (48 * getResources().getDisplayMetrics().density);
         int yEnd = (int) (60 * getResources().getDisplayMetrics().density);
