@@ -24,17 +24,17 @@ import android.widget.Toast;
 public class ReadSerialAccessibilityService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        Log.e("辅助功能", "onAccessibilityEvent," + event.toString());
+        //Log.e("辅助功能", "onAccessibilityEvent," + event.toString());
     }
 
     @Override
     public void onInterrupt() {
-        Log.e("辅助功能", "onInterrupt");
+       // Log.e("辅助功能", "onInterrupt");
     }
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        Log.e("辅助功能", "onKeyEvent:" + event.getKeyCode());
+       // Log.e("辅助功能", "onKeyEvent:" + event.getKeyCode());
         if (event.getKeyCode() == 24)
             return true;
         return super.onKeyEvent(event);
@@ -248,6 +248,11 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
             foundSerialView = true;
             if (++time == 1)
                 SerialHelper.sendMessage(serial);
+
+            //读取完序列号后自动关闭该辅助功能，是为了避免影响有类似功能的辅助功能，如果这个功能不关闭，其他的类似的辅助功能即使开启也不能生效，会回调onCanceled,所以最好用完就给关闭掉
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                disableSelf();
+            }
         }
         return foundSerialView;
     }
