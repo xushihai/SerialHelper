@@ -51,6 +51,10 @@ public class ReadSerialAccessibilityService extends AccessibilityService {
     @RequiresApi(api = 26)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent==null){
+            return super.onStartCommand(intent, flags, startId);
+        }
+
         Log.e("辅助功能", "onStartCommand  " + intent.getAction());
         if (intent.getAction().equals("com.simulateClickStatusView")) {
             foundStatusView = false;
